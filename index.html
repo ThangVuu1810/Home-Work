@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Danh sách Bài tập Hàng tuần — OOP</title>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Be Vietnam Pro', sans-serif;
+    background: #ffffff;
+    color: #1a1a2e;
+    line-height: 1.7;
+    padding: 40px 20px 80px;
+  }
+
+  .container {
+    max-width: 780px;
+    margin: 0 auto;
+  }
+
+  /* Header */
+  .page-header {
+    text-align: center;
+    margin-bottom: 48px;
+    padding-bottom: 32px;
+    border-bottom: 2px solid #e8e8e8;
+  }
+
+  .page-header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1a1a2e;
+    letter-spacing: -0.5px;
+    margin-bottom: 6px;
+  }
+
+  .page-header .subtitle {
+    font-size: 14px;
+    color: #888;
+    font-weight: 400;
+  }
+
+  /* Week card */
+  .week {
+    margin-bottom: 36px;
+  }
+
+  .week-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 16px;
+  }
+
+  .week-number {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 18px;
+    color: #fff;
+    flex-shrink: 0;
+  }
+
+  .week:nth-child(1) .week-number { background: #2563eb; }
+  .week:nth-child(2) .week-number { background: #7c3aed; }
+  .week:nth-child(3) .week-number { background: #059669; }
+  .week:nth-child(4) .week-number { background: #d97706; }
+  .week:nth-child(5) .week-number { background: #dc2626; }
+  .week:nth-child(6) .week-number { background: #0891b2; }
+
+  .week-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1a1a2e;
+  }
+
+  .week-topic {
+    font-size: 13px;
+    color: #999;
+    font-weight: 400;
+  }
+
+  /* Exercise list */
+  .exercise-list {
+    background: #fafafa;
+    border: 1px solid #eeeeee;
+    border-radius: 10px;
+    padding: 4px 0;
+    list-style: none;
+  }
+
+  .exercise-item {
+    padding: 12px 20px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 14px;
+  }
+
+  .exercise-item:last-child {
+    border-bottom: none;
+  }
+
+  .ex-badge {
+    flex-shrink: 0;
+    font-size: 11px;
+    font-weight: 600;
+    color: #666;
+    background: #e8e8e8;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-top: 2px;
+    white-space: nowrap;
+  }
+
+  .ex-content {
+    color: #333;
+  }
+
+  .ex-content strong {
+    font-weight: 600;
+    color: #1a1a2e;
+  }
+
+  .ex-sub {
+    margin-top: 4px;
+    padding-left: 16px;
+    font-size: 13px;
+    color: #666;
+  }
+
+  .ex-sub li {
+    list-style: disc;
+    margin-bottom: 2px;
+  }
+
+  /* Badge for advanced */
+  .badge-advanced {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 600;
+    color: #d97706;
+    background: #fef3c7;
+    padding: 1px 7px;
+    border-radius: 3px;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+
+  .badge-team {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 600;
+    color: #7c3aed;
+    background: #ede9fe;
+    padding: 1px 7px;
+    border-radius: 3px;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+
+  .badge-refactor {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 600;
+    color: #059669;
+    background: #d1fae5;
+    padding: 1px 7px;
+    border-radius: 3px;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+
+  .badge-new {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 600;
+    color: #0891b2;
+    background: #cffafe;
+    padding: 1px 7px;
+    border-radius: 3px;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+
+  /* Summary */
+  .week-summary {
+    text-align: right;
+    padding: 8px 20px;
+    font-size: 12px;
+    color: #aaa;
+    font-weight: 500;
+  }
+
+  /* Footer */
+  .page-footer {
+    text-align: center;
+    margin-top: 48px;
+    padding-top: 24px;
+    border-top: 1px solid #eee;
+    font-size: 12px;
+    color: #bbb;
+  }
+
+  /* Skill tags */
+  .skill-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 6px;
+  }
+  .skill-tag {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 1px 7px;
+    border-radius: 3px;
+    color: #555;
+    background: #f0f0f0;
+    border: 1px solid #e0e0e0;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <div class="page-header">
+    <h1>Danh sách Bài tập Hàng tuần</h1>
+    <div class="subtitle">Object-Oriented Programming — BCSE, VJU</div>
+  </div>
+
+  <!-- TUẦN 1 -->
+  <div class="week">
+    <div class="week-header">
+      <div class="week-number">1</div>
+      <div>
+        <div class="week-title">Tuần 1</div>
+        <div class="week-topic">Setup Workspace + GitHub + Hello World</div>
+      </div>
+    </div>
+    <ul class="exercise-list">
+      <li class="exercise-item"><span class="ex-badge">1</span><div class="ex-content">Cài IDE VS Code</div></li>
+      <li class="exercise-item"><span class="ex-badge">2</span><div class="ex-content">Kết nối GitHub với VS Code (Git)</div></li>
+      <li class="exercise-item"><span class="ex-badge">3</span><div class="ex-content">Tạo repo OOP, push lên GitHub</div></li>
+      <li class="exercise-item"><span class="ex-badge">4</span><div class="ex-content">Viết chương trình Hello World, commit/push</div></li>
+      <li class="exercise-item"><span class="ex-badge">5</span><div class="ex-content">Dán link repo (chế độ public) vào Google Sheet lớp</div></li>
+    </ul>
+    <div class="week-summary">5 bài tập</div>
+  </div>
+
+  <!-- TUẦN 2 -->
+  <div class="week">
+    <div class="week-header">
+      <div class="week-number">2</div>
+      <div>
+        <div class="week-title">Tuần 2</div>
+        <div class="week-topic">Python cơ bản — Biến, biểu thức, hàm, vòng lặp</div>
+      </div>
+    </div>
+    <ul class="exercise-list">
+      <li class="exercise-item"><span class="ex-badge">Ex 1.2</span><div class="ex-content"><strong>Python as a calculator</strong> — Đổi phút↔giây, km↔mile, tính pace & speed<ul class="ex-sub"><li>Câu 1: Đổi 42 phút 42 giây ra giây</li><li>Câu 2: Đổi 10 km ra mile</li><li>Câu 3: Tính average pace và average speed</li></ul></div></li>
+      <li class="exercise-item"><span class="ex-badge">Ex 2.2</span><div class="ex-content"><strong>Practice using Python interpreter</strong><ul class="ex-sub"><li>Câu 1: Tính thể tích hình cầu bán kính 5</li><li>Câu 2: Tính tổng chi phí bán sỉ 60 cuốn sách</li><li>Câu 3: Tính thời gian về nhà sau khi chạy bộ</li></ul></div></li>
+      <li class="exercise-item"><span class="ex-badge">Ex 3.3</span><div class="ex-content"><strong>Vẽ grid bằng hàm</strong><ul class="ex-sub"><li>Câu 1: Vẽ grid 2×2</li><li>Câu 2: Vẽ grid 4×4</li></ul></div></li>
+      <li class="exercise-item"><span class="ex-badge">Ex 5.1</span><div class="ex-content"><strong>Module time</strong> — Viết script đọc thời gian hiện tại, đổi ra giờ:phút:giây + số ngày từ epoch</div></li>
+    </ul>
+    <div class="week-summary">4 bài tập (9 câu)</div>
+  </div>
+
+  <!-- TUẦN 3 -->
+  <div class="week">
+    <div class="week-header">
+      <div class="week-number">3</div>
+      <div>
+        <div class="week-title">Tuần 3</div>
+        <div class="week-topic">Class cơ bản — Xây dựng lớp, thuộc tính, phương thức</div>
+      </div>
+    </div>
+    <ul class="exercise-list">
+      <li class="exercise-item"><span class="ex-badge">BT 1</span><div class="ex-content"><strong>Lớp Point — 2D Geometry</strong><ul class="ex-sub"><li>Tạo điểm A(3,4) → hiển thị tọa độ</li><li>Tạo điểm B từ bàn phím</li><li>Tạo điểm C đối xứng B qua gốc O</li><li>Tính khoảng cách B→O và A→B</li></ul></div></li>
+      <li class="exercise-item"><span class="ex-badge">BT 2</span><div class="ex-content"><strong>Lớp SieuNhan</strong> — Tạo lớp với thuộc tính ten, vu_khi, mau_sac; khởi tạo 2 đối tượng</div></li>
+      <li class="exercise-item"><span class="ex-badge">BT 3</span><div class="ex-content"><strong>Quản lý danh sách siêu nhân</strong> — Dùng while nhập, for in danh sách kèm thuộc tính</div></li>
+      <li class="exercise-item"><span class="ex-badge">BT 4</span><div class="ex-content"><strong>Nhận diện lớp từ thực tế</strong> — Xác định thuộc tính & phương thức cho: Con chó, Ô tô, Tài khoản</div></li>
+      <li class="exercise-item"><span class="ex-badge">Ex 15.1</span><div class="ex-content"><strong>Lớp Circle</strong> — Viết class Circle (center, radius) + các hàm point_in_circle, rect_in_circle, rect_circle_overlap</div></li>
+      <li class="exercise-item"><span class="ex-badge">BT NC</span><div class="ex-content"><strong>Lớp NhanVien</strong> <span class="badge-advanced">Nâng cao</span><ul class="ex-sub"><li>tinhLuong(): Lương = luongCoBan × heSoLuong</li><li>inTTin(): Hiển thị đầy đủ thông tin</li><li>tangLuong(delta): Kiểm tra LUONG_MAX</li><li>Viết getter/setter cho tất cả thuộc tính</li></ul></div></li>
+    </ul>
+    <div class="week-summary">6 bài tập</div>
+  </div>
+
+  <!-- TUẦN 4 -->
+  <div class="week">
+    <div class="week-header">
+      <div class="week-number">4</div>
+      <div>
+        <div class="week-title">Tuần 4</div>
+        <div class="week-topic">Encapsulation — Constructor, getter/setter, đóng gói</div>
+      </div>
+    </div>
+    <ul class="exercise-list">
+      <li class="exercise-item"><span class="ex-badge">BT 1</span><div class="ex-content"><strong>Lớp NhanVien</strong> — Viết mã nguồn đầy đủ theo UML: thuộc tính private, tinhLuong(), inTTin(), tangLuong(), getter/setter</div></li>
+      <li class="exercise-item"><span class="ex-badge">BT 2</span><div class="ex-content"><strong>Lớp LineSegment</strong> — Cài đặt lớp đoạn thẳng<ul class="ex-sub"><li>Thuộc tính d1, d2 (Point, private)</li><li>Constructor mặc định, có đối số (Point, int), sao chép sâu</li></ul></div></li>
+    </ul>
+    <div class="week-summary">2 bài tập</div>
+  </div>
+
+  <!-- TUẦN 5 -->
+  <div class="week">
+    <div class="week-header">
+      <div class="week-number">5</div>
+      <div>
+        <div class="week-title">Tuần 5</div>
+        <div class="week-topic">Kế thừa (Inheritance) — Lớp cha/con, ghi đè phương thức, UML</div>
+      </div>
+    </div>
+    <ul class="exercise-list">
+      <li class="exercise-item"><span class="ex-badge">BT 1</span><div class="ex-content"><strong>Hệ thống phân loại Hàng hóa</strong> — Xây dựng lớp cha <code>HangHoa</code> và 3 lớp con kế thừa<ul class="ex-sub"><li><strong>HangDienMay</strong>: giá, thời gian bảo hành, điện áp, công suất</li><li><strong>HangSanhSu</strong>: giá, loại nguyên liệu</li><li><strong>HangThucPham</strong>: giá, ngày sản xuất, ngày hết hạn</li><li>Vẽ sơ đồ lớp UML, viết chương trình tạo + xuất thông tin</li></ul></div></li>
+      <li class="exercise-item"><span class="ex-badge">BT 2</span><div class="ex-content"><strong>Hệ thống quản lý Nhân viên phòng ban</strong> — Lớp cha chung, 3 lớp con<ul class="ex-sub"><li><strong>CongTacVien</strong>: thời hạn hợp đồng, phụ cấp lao động</li><li><strong>NhanVienChinhThuc</strong>: vị trí công việc</li><li><strong>TruongPhong</strong>: ngày bắt đầu quản lý, phụ cấp quản lý</li></ul></div></li>
+      <li class="exercise-item"><span class="ex-badge">BT 3</span><div class="ex-content"><strong>Quản lý cán bộ đơn vị sản xuất</strong> — Lớp cha <code>CanBo</code> và 3 lớp con<ul class="ex-sub"><li><strong>CongNhan</strong>: Bậc (1–10)</li><li><strong>KySu</strong>: Ngành đào tạo</li><li><strong>NhanVien</strong>: Công việc</li><li>Lớp <code>QLCB</code>: thêm mới, tìm kiếm, hiển thị, thoát</li></ul></div></li>
+      <li class="exercise-item"><span class="ex-badge">BT NC</span><div class="ex-content"><strong>Game bài Poker</strong> <span class="badge-advanced">Nâng cao</span> <span class="badge-team">Team work</span><ul class="ex-sub"><li>Triển khai theo UML: Card, Deck, Hand, Player, PokerGame</li></ul></div></li>
+    </ul>
+    <div class="week-summary">3 bài tập + 1 nâng cao</div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- TUẦN 6 -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="week">
+    <div class="week-header">
+      <div class="week-number">6</div>
+      <div>
+        <div class="week-title">Tuần 6</div>
+        <div class="week-topic">Đa hình & Ngoại lệ — ABC, Magic Methods, @property, Operator Overloading</div>
+      </div>
+    </div>
+    <ul class="exercise-list">
+
+      <li class="exercise-item">
+        <span class="ex-badge">BT 1</span>
+        <div class="ex-content">
+          <strong>Refactor Quản lý Hàng Hóa</strong> <span class="badge-refactor">Refactor</span>
+          <br>Lấy lại bài tập Hàng Hóa đã làm ở tuần 5 (HangHoa → HangDienMay, HangSanhSu, HangThucPham). Refactor (viết lại) áp dụng <strong>đầy đủ</strong> các kiến thức đã học trong chương 6. Giữ nguyên bài toán — thay đổi cách triển khai. So sánh code trước/sau để thấy sự khác biệt.
+          <div class="skill-tags">
+            <span class="skill-tag">ABC + @abstractmethod</span>
+            <span class="skill-tag">Override cùng tên</span>
+            <span class="skill-tag">@property</span>
+            <span class="skill-tag">__str__</span>
+            <span class="skill-tag">__eq__</span>
+            <span class="skill-tag">__lt__</span>
+            <span class="skill-tag">Custom Exception</span>
+            <span class="skill-tag">with</span>
+          </div>
+        </div>
+      </li>
+
+      <li class="exercise-item">
+        <span class="ex-badge">BT 2</span>
+        <div class="ex-content">
+          <strong>Nâng cấp Quản lý Cán bộ</strong> <span class="badge-refactor">Refactor</span>
+          <br>Lấy lại bài Quản lý Cán bộ đơn vị sản xuất (BT 3 tuần 5): lớp cha <code>CanBo</code> (họ tên, tuổi, giới tính, địa chỉ) → <code>CongNhan</code> (bậc 1–10), <code>KySu</code> (ngành ĐT), <code>NhanVien</code> (công việc). Nâng cấp bằng kiến thức chương 6:
+          <ul class="ex-sub">
+            <li><code>CanBo</code> → ABC, <code>mo_ta()</code> là <code>@abstractmethod</code></li>
+            <li>Mỗi lớp con override <code>mo_ta()</code> cùng tên → đa hình</li>
+            <li><code>@property</code> + validation: tuổi (18–65), bậc công nhân (1–10)</li>
+            <li><code>__str__</code>, <code>__repr__</code>: <code>print(cb)</code> hiển thị đầy đủ thông tin</li>
+            <li><code>__eq__</code> (theo họ tên + tuổi), <code>__lt__</code> (sắp xếp theo tên ABC)</li>
+            <li>Custom exception: <code>TuoiKhongHopLe</code>, <code>BacKhongHopLe</code></li>
+            <li><code>with</code> statement — lưu/đọc danh sách từ file</li>
+          </ul>
+          <div class="skill-tags">
+            <span class="skill-tag">ABC + @abstractmethod</span>
+            <span class="skill-tag">Override cùng tên</span>
+            <span class="skill-tag">@property + validation</span>
+            <span class="skill-tag">__str__ __repr__</span>
+            <span class="skill-tag">__eq__ __lt__</span>
+            <span class="skill-tag">Custom Exception</span>
+            <span class="skill-tag">with</span>
+          </div>
+        </div>
+      </li>
+
+      <li class="exercise-item">
+        <span class="ex-badge">BT 3</span>
+        <div class="ex-content">
+          <strong>Xây dựng lớp Phân Số</strong> <span class="badge-new">Bài mới</span> <span class="badge-advanced">Nâng cao</span>
+          <br>Xây dựng lớp <code>PhanSo</code> với hai thuộc tính riêng (private) xác định tử số và mẫu số. Xây dựng các phương thức:
+          <ul class="ex-sub">
+            <li>Hàm khởi tạo <code>__init__(self, tu, mau)</code>: kiểm tra mẫu số ≠ 0, nếu sai <code>raise MauSoBangKhong</code></li>
+            <li>Các phép toán +, −, ×, ÷ các phân số (operator overloading: <code>__add__</code>, <code>__sub__</code>, <code>__mul__</code>, <code>__truediv__</code>)</li>
+            <li>Phép kiểm tra phân số có tối giản hay không (<code>is_toi_gian</code>)</li>
+            <li>Phép tìm dạng tối giản của phân số (<code>toi_gian</code>)</li>
+            <li>Phép so sánh ==, &lt;, &gt; giữa các phân số (<code>__eq__</code>, <code>__lt__</code>, <code>__gt__</code>)</li>
+            <li>Hiển thị phân số: <code>__str__</code> trả về dạng "tử/mẫu" hoặc số nguyên nếu mẫu = 1</li>
+          </ul>
+          Viết chương trình ứng dụng:
+          <ul class="ex-sub">
+            <li>Nhập vào một dãy các phân số</li>
+            <li>In ra màn hình dạng tối giản của các phân số đó</li>
+            <li>Sắp xếp dãy phân số theo giá trị tăng dần (dùng <code>sorted()</code> nhờ <code>__lt__</code>)</li>
+          </ul>
+          <div class="skill-tags">
+            <span class="skill-tag">@property + validation</span>
+            <span class="skill-tag">Custom Exception</span>
+            <span class="skill-tag">__add__ __sub__ __mul__ __truediv__</span>
+            <span class="skill-tag">__eq__ __lt__ __gt__</span>
+            <span class="skill-tag">__str__ __repr__</span>
+            <span class="skill-tag">__hash__</span>
+          </div>
+        </div>
+      </li>
+
+    </ul>
+    <div class="week-summary">2 bài refactor + 1 bài mới nâng cao</div>
+  </div>
+
+  <div class="page-footer">
+    Tổng cộng: <strong>24 bài tập</strong> (Tuần 1–6) &nbsp;·&nbsp; BCSE — Vietnam Japan University
+  </div>
+
+</div>
+
+</body>
+</html>
