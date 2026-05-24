@@ -1,0 +1,245 @@
+import csv
+import json
+
+class CanBo:
+    def __init__(self, ho_ten, tuoi, gioi_tinh, dia_chi):
+        self.ho_ten = ho_ten
+        self.tuoi = int(tuoi)
+        self.gioi_tinh = gioi_tinh
+        self.dia_chi = dia_chi
+
+    def hien_thi(self):
+        print(f"Họ tên: {self.ho_ten}")
+        print(f"Tuổi: {self.tuoi}")
+        print(f"Giới tính: {self.gioi_tinh}")
+        print(f"Địa chỉ: {self.dia_chi}")
+
+    def to_dict(self):
+        return {
+            "loai": self.__class__.__name__,
+            "ho_ten": self.ho_ten,
+            "tuoi": self.tuoi,
+            "gioi_tinh": self.gioi_tinh,
+            "dia_chi": self.dia_chi
+        }
+
+    @staticmethod
+    def from_dict(data):
+        loai = data["loai"]
+
+        if loai == "CongNhan":
+            return CongNhan(
+                data["ho_ten"], data["tuoi"],
+                data["gioi_tinh"], data["dia_chi"],
+                data["bac"]
+            )
+
+        elif loai == "KySu":
+            return KySu(
+                data["ho_ten"], data["tuoi"],
+                data["gioi_tinh"], data["dia_chi"],
+                data["nganh"]
+            )
+
+        elif loai == "NhanVien":
+            return NhanVien(
+                data["ho_ten"], data["tuoi"],
+                data["gioi_tinh"], data["dia_chi"],
+                data["cong_viec"]
+            )
+
+        else:
+            raise ValueError("Loại cán bộ không hợp lệ")
+
+
+class CongNhan(CanBo):
+    def __init__(self, ho_ten, tuoi, gioi_tinh, dia_chi, bac):
+        super().__init__(ho_ten, tuoi, gioi_tinh, dia_chi)
+        self.bac = int(bac)
+
+    def hien_thi(self):
+        super().hien_thi()
+        print(f"Bậc: {self.bac}")
+
+    def to_dict(self):
+        data = super().to_dict()
+        data["bac"] = self.bac
+        return data
+
+
+class KySu(CanBo):
+    def __init__(self, ho_ten, tuoi, gioi_tinh, dia_chi, nganh):
+        super().__init__(ho_ten, tuoi, gioi_tinh, dia_chi)
+        self.nganh = nganh
+
+    def hien_thi(self):
+        super().hien_thi()
+        print(f"Ngành: {self.nganh}")
+
+    def to_dict(self):
+        data = super().to_dict()
+        data["nganh"] = self.nganh
+        return data
+
+class NhanVien(CanBo):
+    def __init__(self, ho_ten, tuoi, gioi_tinh, dia_chi, cong_viec):
+        super().__init__(ho_ten, tuoi, gioi_tinh, dia_chi)
+        self.cong_viec = cong_viec
+
+    def hien_thi(self):
+        super().hien_thi()
+        print(f"Công việc: {self.cong_viec}")
+
+    def to_dict(self):
+        data = super().to_dict()
+        data["cong_viec"] = self.cong_viec
+        return data
+
+class QuanLyCanBo:
+    def __init__(self):
+        self.danh_sach = {}
+        self.load_json()
+
+    def them(self, can_bo):
+        self.danh_sach[can_bo.ho_ten] = can_bo
+        self.save_json()
+
+    def xoa(self, ho_ten):
+        if ho_ten in self.danh_sach:
+            del self.danh_sach[ho_ten]
+            self.save_json()
+
+    def tim_theo_ten(self, ho_ten):
+        return self.danh_sach.get(ho_ten)
+
+    def tim_theo_loai(self, loai):
+        return [
+            cb for cb in self.danh_sach.values()
+            if cb.__class__.__name__ == loai
+        ]
+
+    def top_3_bac_cao_nhat(self):
+        cong_nhan = [
+            cb for cb in self.danh_sach.values()
+            if isinstance(cb, CongNhan)
+        ]
+
+        top3 = sorted(cong_nhan, key=lambda x: x.bac, reverse=True)[:3]
+
+        return top3
+
+    def load_csv(self, file_name="canbo.csv"):
+        try:
+            with open(file_name, mode="r", encoding="utf-8") as f:
+                reader = csv.reader(f)
+
+                for row in reader:
+                    try:
+                        ho_ten, tuoi, gioi_tinh, dia_chi, loai, thong_tin = row
+
+                        if loai == "CongNhan":
+                            cb = CongNhan(
+                                ho_ten, tuoi, gioi_tinh, dia_chi, thong_tin
+                            )
+
+                        elif loai == "KySu":
+                            cb = KySu(
+                                ho_ten, tuoi, gioi_tinh, dia_chi, thong_tin
+                            )
+
+                        elif loai == "NhanVien":
+                            cb = NhanVien(
+                                ho_ten, tuoi, gioi_tinh, dia_chi, thong_tin
+                            )
+
+                        else:
+                            raise ValueError("Loại không hợp lệ")
+
+                        self.danh_sach[ho_ten] = cb
+
+                    except ValueError as e:
+                        print("Lỗi dữ liệu dòng:", row, "-", e)
+
+            self.save_json()
+
+        except FileNotFoundError:
+            print("Không tìm thấy file CSV")
+
+    def save_json(self, file_name="canbo.json"):
+        data = [cb.to_dict() for cb in self.danh_sach.values()]
+
+        with open(file_name, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=4)
+
+    def load_json(self, file_name="canbo.json"):
+        try:
+            with open(file_name, "r", encoding="utf-8") as f:
+                data = json.load(f)
+
+                for item in data:
+                    cb = CanBo.from_dict(item)
+                    self.danh_sach[cb.ho_ten] = cb
+
+        except FileNotFoundError:
+            pass
+
+    def hien_thi_tat_ca(self):
+        for cb in self.danh_sach.values():
+            cb.hien_thi()
+            print("-" * 30)
+
+    def menu(self):
+        while True:
+            try:
+                print("\n===== MENU =====")
+                print("1. Load CSV")
+                print("2. Hiển thị danh sách")
+                print("3. Tìm theo tên")
+                print("4. Tìm theo loại")
+                print("5. Top 3 công nhân bậc cao nhất")
+                print("6. Xóa theo tên")
+                print("0. Thoát")
+
+                choice = input("Chọn: ")
+
+                if choice == "1":
+                    self.load_csv()
+
+                elif choice == "2":
+                    self.hien_thi_tat_ca()
+
+                elif choice == "3":
+                    ten = input("Nhập tên: ")
+                    cb = self.tim_theo_ten(ten)
+                    if cb:
+                        cb.hien_thi()
+                    else:
+                        print("Không tìm thấy")
+
+                elif choice == "4":
+                    loai = input("Nhập loại: ")
+                    ds = self.tim_theo_loai(loai)
+                    for cb in ds:
+                        cb.hien_thi()
+                        print("-" * 20)
+
+                elif choice == "5":
+                    for cb in self.top_3_bac_cao_nhat():
+                        cb.hien_thi()
+                        print("-" * 20)
+
+                elif choice == "6":
+                    ten = input("Tên cần xóa: ")
+                    self.xoa(ten)
+
+                elif choice == "0":
+                    break
+
+                else:
+                    print("Lựa chọn không hợp lệ")
+
+            except Exception as e:
+                print("Lỗi:", e)
+
+ql = QuanLyCanBo()
+ql.menu()
